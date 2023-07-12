@@ -1,8 +1,11 @@
-package telran.time;
+package telran.time.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import telran.time.BarMizvaEdjuster;
+import telran.time.NextFriday13;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -29,24 +32,22 @@ class DateTimeTests {
 		TemporalAdjuster fr13 = new NextFriday13();
 		ZonedDateTime zdt = ZonedDateTime.now();
 		ZonedDateTime fr13Expected = ZonedDateTime.of(2023, 10, 13, 0, 0, 0, 0, ZoneId.systemDefault());
-		assertEquals(fr13Expected, zdt.with(fr13));
+		assertEquals(fr13Expected.toLocalDate(), zdt.with(fr13).toLocalDate());
 		LocalDate fr13Expected2 = LocalDate.of(2024, 9, 13);
 		LocalDate ld = LocalDate.of(2023, 10, 13);
 		assertEquals(fr13Expected2, ld.with(fr13));
+		assertThrowsExactly(UnsupportedTemporalTypeException.class, () -> LocalTime.now().with(fr13));
 
 	}
 
 	@Test
 	void canadaCurrentTime() {
 		// displayCurrentTime("Europe/London");
-		// TODO display current date & time in all time zones related to Canada
+		// display current date & time in all time zones related to Canada
 		// Date / Time (HH:mm) / Time Zone name
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/YYYY / HH:mm / zzzz");
-		for (String zoneName : ZoneId.getAvailableZoneIds()) {
-			if (zoneName.contains("Canada")) {
-				displayCurrentTime(zoneName, dtf);
-			}
-		}
+		ZoneId.getAvailableZoneIds().stream().filter(z -> z.contains("Canada"))
+				.forEach(z -> displayCurrentTime(z, dtf));
 
 	}
 
